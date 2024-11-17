@@ -16,8 +16,6 @@ external_components:
   source:
     type: git
     url: https://github.com/karllinder/esphome-climate-mhi
-    ref: Add_ECO_Preset
-  refresh: 1min
 ```
 Then, add the climate config:
 

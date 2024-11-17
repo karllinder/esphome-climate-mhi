@@ -241,12 +241,12 @@ namespace esphome {
             auto temperature = 22;
             auto fanSpeed = MHI_FAN_AUTO;
             auto swingV = MHI_VS_STOP;
-            // auto swingH = MHI_HS_RIGHT;  // custom preferred value for this mode, should be MHI_HS_STOP
+         // auto swingH = MHI_HS_RIGHT;  // custom preferred value for this mode, should be MHI_HS_STOP
             auto swingH = MHI_HS_STOP;
             auto _3DAuto = MHI_3DAUTO_OFF;
             auto ecoMode = MHI_ECO_OFF;
             auto silentMode = MHI_SILENT_OFF;
-            auto nightMode = MHI_NIGHT_OFF;
+        //  auto nightMode = MHI_NIGHT_OFF;
 
             // ----------------------
             // Assign the values
@@ -355,10 +355,10 @@ namespace esphome {
  //                 nightMode = MHI_NIGHT_ON; // set nightmode on
                     break;
                 // 2024-07-05 Added preset Night.
-                case climate::CLIMATE_PRESET_NIGHT:
-                    _3DAuto = MHI_3DAUTO_ON; // set 3dmode to on
+  //            case climate::CLIMATE_PRESET_NIGHT:
+  //                _3DAuto = MHI_3DAUTO_ON; // set 3dmode to on
   //                nightMode = MHI_NIGHT_ON; // set nightmode on
-                    break;
+  //                break;
                 default: //set None to default - no action
                     break;
             }
@@ -383,7 +383,7 @@ namespace esphome {
             remote_state[13] |= swingV | swingH;
 
             // Silent and Night mode
-            remote_state[15] |= silentMode | nightMode;
+            remote_state[15] |= silentMode;//  | nightMode;
 
             // There is no real checksum, but some bytes are inverted
             remote_state[6] = ~remote_state[5];

@@ -23,11 +23,12 @@ namespace esphome {
                     std::set<climate::ClimatePreset>{
                         climate::CLIMATE_PRESET_NONE, climate::CLIMATE_PRESET_ECO,
                         climate::CLIMATE_PRESET_BOOST, climate::CLIMATE_PRESET_ACTIVITY
-                    },
-                // 2024-07-05 Added custom -- possible wrong way to do this...
-                    std::set<std::string>{
-                        NIGHT
                     }
+                    //,
+                // 2024-07-05 Added custom -- possible wrong way to do this...
+                //    std::set<std::string>{
+                //        NIGHT
+                 //   }
                 ) {}
 
             protected:

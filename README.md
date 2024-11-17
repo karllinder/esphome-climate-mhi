@@ -1,5 +1,7 @@
 # esphome-climate-mhi
-### This is to TEST CUSTOM PRESET
+### This is a clone of https://github.com/Dennis-Q/esphome-climate-mhi
+The orginal reposity is no longer updated, see https://github.com/Dennis-Q/esphome-climate-mhi/pull/2#issuecomment-1722956833
+
 Custom component to support Mitsubishi Heavy Industries as climate IR in ESPhome.
 
 This code is based on remote type RLA502A700K

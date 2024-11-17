@@ -26,7 +26,7 @@ namespace esphome {
                     },
                 // 2024-07-05 Added custom -- possible wrong way to do this...
                     std::set<std::string>{
-                        climate::CLIMATE_PRESET_NIGHT
+                        NIGHT
                     }
                 ) {}
 

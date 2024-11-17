@@ -22,8 +22,7 @@ namespace esphome {
         const uint8_t MHI_FAN2 = 0x0D;
         const uint8_t MHI_FAN3 = 0x0C;
         const uint8_t MHI_FAN4 = 0x0B;
-        const uint8_t MHI_HIPOWER = 0x07;
-        const uint8_t MHI_ECONO = 0x00;
+        const uint8_t MHI_HIPOWER = 0x04; //changed from 0x07 to 0x04
 
         // Vertical swing
         const uint8_t MHI_VS_SWING = 0xE0;
@@ -52,6 +51,14 @@ namespace esphome {
         // NOT available in Fan or Dry mode
         const uint8_t MHI_SILENT_ON = 0x00;
         const uint8_t MHI_SILENT_OFF = 0x80;
+        
+        // Night setback 
+        const uint8_t MHI_NIGHT_ON = 0x00;
+        const uint8_t MHI_NIGHT_OFF = 0x40;
+        
+        // Eco
+        const uint8_t MHI_ECO_ON = 0x00;
+        const uint8_t MHI_ECO_OFF = 0x10;
 
         // Pulse parameters in usec
         const uint16_t MHI_BIT_MARK = 400;
@@ -144,10 +151,10 @@ namespace esphome {
                     case MHI_DRY:
                         this->mode = climate::CLIMATE_MODE_DRY;
                         break;
-                    default:
                     case MHI_AUTO:
-                        this->mode = climate::CLIMATE_MODE_AUTO;
-                        // swingV = MHI_VS_MIDDLE;
+                        this->mode = climate::CLIMATE_MODE_HEAT_COOL;  //AUTO don´t exist in climate_ir
+                        break;
+                    default:
                         break;
                 }
             } else {
@@ -170,31 +177,39 @@ namespace esphome {
 
             // Fan speed
             switch (fanSpeed) {
-                case MHI_FAN1:
-                case MHI_FAN2: // Only to support remote feedback
+                case MHI_FAN1: 
                     this->fan_mode = climate::CLIMATE_FAN_LOW;
                     break;
+                case MHI_FAN2: // Only to support remote feedback
                 case MHI_FAN3:
                     this->fan_mode = climate::CLIMATE_FAN_MEDIUM;
                     break;
                 case MHI_FAN4:
-                case MHI_HIPOWER: // Not yet supported. Will be added when ESPHome supports it.
-                    this->fan_mode = climate::CLIMATE_FAN_HIGH;
+                    this->fan_mode = climate::CLIMATE_FAN_HIGH; // Moved to Fan4
                     break;
                 case MHI_FAN_AUTO:
                     this->fan_mode = climate::CLIMATE_FAN_AUTO;
-                    switch (swingH) {
-                        case MHI_HS_MIDDLE:
-                            this->fan_mode = climate::CLIMATE_FAN_MIDDLE;
-                            break;
-                        case MHI_HS_RIGHTLEFT:
-                            this->fan_mode = climate::CLIMATE_FAN_FOCUS;
-                            break;
-                        case MHI_HS_LEFTRIGHT:
-                            this->fan_mode = climate::CLIMATE_FAN_DIFFUSE;
-                            break;
-                    }
-                case MHI_ECONO: // Not yet supported. Will be added when ESPHome supports it.
+             //       switch (swingH) {     
+             //           case MHI_HS_SWING:
+             //           case MHI_HS_LEFT:
+             //           case MHI_HS_MLEFT:
+             //           case MHI_HS_MRIGHT:
+             //           case MHI_HS_RIGHT:
+             //           case MHI_HS_STOP:
+             //           case MHI_HS_MIDDLE:
+             //               this->fan_mode = climate::CLIMATE_FAN_MIDDLE;
+             //               break;
+             //           case MHI_HS_RIGHTLEFT:
+             //               this->fan_mode = climate::CLIMATE_FAN_FOCUS;
+             //               break;
+             //           case MHI_HS_LEFTRIGHT:
+             //               this->fan_mode = climate::CLIMATE_FAN_DIFFUSE;
+             //               break;  
+             //       }
+                    break;
+                case MHI_HIPOWER: // Set via BOOST Preset
+                    this->preset = climate::CLIMATE_PRESET_BOOST; // Problem to get feedback to trigger preset.
+                    break;                    
                 default:
                     this->fan_mode = climate::CLIMATE_FAN_AUTO;
                     break;
@@ -210,8 +225,8 @@ namespace esphome {
             uint8_t remote_state[] = {
                 0x52, 0xAE, 0xC3, 0x1A,
                 0xE5, 0x90, 0x00, 0xF0,
-                0x00, 0xF0, 0x00, 0x0D,
-                0x00, 0x10, 0x00, 0xFF,
+                0x00, 0xE0, 0x00, 0x0D,
+                0x00, 0x10, 0x00, 0x3F,
                 0x00, 0x7F, 0x00
             };
 
@@ -229,7 +244,9 @@ namespace esphome {
             // auto swingH = MHI_HS_RIGHT;  // custom preferred value for this mode, should be MHI_HS_STOP
             auto swingH = MHI_HS_STOP;
             auto _3DAuto = MHI_3DAUTO_OFF;
+            auto ecoMode = MHI_ECO_OFF;
             auto silentMode = MHI_SILENT_OFF;
+            auto nightMode = MHI_NIGHT_OFF;
 
             // ----------------------
             // Assign the values
@@ -237,6 +254,10 @@ namespace esphome {
 
             // Power and operating mode
             switch (this->mode) {
+              case climate::CLIMATE_MODE_HEAT_COOL:
+                    operatingMode = MHI_AUTO;
+                    swingV = MHI_VS_MIDDLE; // custom preferred value for this mode
+                    break;
                 case climate::CLIMATE_MODE_COOL:
                     operatingMode = MHI_COOL;
                     swingV = MHI_VS_UP; // custom preferred value for this mode
@@ -244,10 +265,6 @@ namespace esphome {
                 case climate::CLIMATE_MODE_HEAT:
                     operatingMode = MHI_HEAT;
                     swingV = MHI_VS_DOWN; // custom preferred value for this mode
-                    break;
-                case climate::CLIMATE_MODE_AUTO:
-                    operatingMode = MHI_AUTO;
-                    swingV = MHI_VS_MIDDLE; // custom preferred value for this mode
                     break;
                 case climate::CLIMATE_MODE_FAN_ONLY:
                     operatingMode = MHI_FAN;
@@ -258,8 +275,8 @@ namespace esphome {
                     swingV = MHI_VS_MIDDLE; // custom preferred value for this mode
                     break;
                 case climate::CLIMATE_MODE_OFF:
-                default:
                     powerMode = MHI_OFF;
+                default:
                     break;
             }
 
@@ -296,21 +313,53 @@ namespace esphome {
                 case climate::CLIMATE_FAN_HIGH:
                     fanSpeed = MHI_FAN4;
                     break;
-                case climate::CLIMATE_FAN_MIDDLE:
-                    fanSpeed = MHI_FAN_AUTO;
-                    swingH = MHI_HS_MIDDLE;
-                    break;
-                case climate::CLIMATE_FAN_FOCUS:
-                    fanSpeed = MHI_FAN_AUTO;
-                    swingH = MHI_HS_RIGHTLEFT;
-                    break;
-                case climate::CLIMATE_FAN_DIFFUSE:
-                    fanSpeed = MHI_FAN_AUTO;
-                    swingH = MHI_HS_LEFTRIGHT;
-                    break;
+           //     case climate::CLIMATE_FAN_MIDDLE:
+           //         fanSpeed = MHI_FAN_AUTO;
+           //         swingH = MHI_HS_MIDDLE;
+           //         break;
+           //     case climate::CLIMATE_FAN_FOCUS:
+           //         fanSpeed = MHI_FAN_AUTO;
+           //         swingH = MHI_HS_RIGHTLEFT;
+           //         break;
+           //     case climate::CLIMATE_FAN_DIFFUSE:
+           //         fanSpeed = MHI_FAN_AUTO;
+           //         swingH = MHI_HS_LEFTRIGHT;
+           //         break;
                 case climate::CLIMATE_FAN_AUTO:
+                    fanSpeed = MHI_FAN_AUTO;
+                    break;
                 default:
                     fanSpeed = MHI_FAN_AUTO;
+                    break;
+            }
+            
+            switch (this->preset.value()) {
+                case climate::CLIMATE_PRESET_NONE:
+                    _3DAuto = MHI_3DAUTO_OFF; // set 3Dmode to off
+                    ecoMode = MHI_ECO_OFF; //set echo mode OFF
+                    nightMode = MHI_NIGHT_OFF; //set night off
+                    break;
+                case climate::CLIMATE_PRESET_ECO:
+                    _3DAuto = MHI_3DAUTO_OFF; // set 3Dmode to off
+                    ecoMode = MHI_ECO_ON;  // set device to Eco mode
+                    nightMode = MHI_NIGHT_OFF; //set night off
+                    fanSpeed = MHI_FAN2; //set fan speed
+                    break;
+                case climate::CLIMATE_PRESET_BOOST:
+                    _3DAuto = MHI_3DAUTO_OFF; // set 3Dmode to off
+                    fanSpeed = MHI_HIPOWER; // set device to high fan
+                    nightMode = MHI_NIGHT_OFF; //set night off
+                    break;
+                case climate::CLIMATE_PRESET_ACTIVITY:
+                    _3DAuto = MHI_3DAUTO_ON; // set 3dmode to on
+                    nightMode = MHI_NIGHT_ON; // set nightmode on
+                    break;
+                // 2024-07-05 Added preset Night.
+                case climate::CLIMATE_PRESET_NIGHT:
+                    _3DAuto = MHI_3DAUTO_ON; // set 3dmode to on
+                    nightMode = MHI_NIGHT_ON; // set nightmode on
+                    break;
+                default: //set None to default - no action
                     break;
             }
 
@@ -325,7 +374,7 @@ namespace esphome {
             remote_state[7] |= (~((uint8_t)temperature - 17) & 0x0F);
 
             // Fan speed
-            remote_state[9] |= fanSpeed;
+            remote_state[9] |= fanSpeed | ecoMode;
 
             // Vertical air flow + 3D auto
             remote_state[11] |= swingV | _3DAuto;
@@ -333,8 +382,8 @@ namespace esphome {
             // Horizontal air flow
             remote_state[13] |= swingV | swingH;
 
-            // Silent
-            remote_state[15] |= silentMode;
+            // Silent and Night mode
+            remote_state[15] |= silentMode | nightMode;
 
             // There is no real checksum, but some bytes are inverted
             remote_state[6] = ~remote_state[5];

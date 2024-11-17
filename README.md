@@ -1,26 +1,41 @@
 # esphome-climate-mhi
-Custom component to support Mitsubishi Heavy Industries as climate IR in ESPhome
+### This is to TEST CUSTOM PRESET
+Custom component to support Mitsubishi Heavy Industries as climate IR in ESPhome.
 
-This code is based on remote type RLA502A700B.
-The remote was delivered with indoor unit model SRK50ZM-S.
+This code is based on remote type RLA502A700K
+The remote was delivered with indoor unit model SRKxxZSW-W.
 
-## Using this component
-Clone/download this repository into '/config/esphome/esphome-climate-mhi' and add to your esphome configuration:
+Also possibel to use remote reciver in ESPHome to read out IR commands sent by IR Remote.
+
+To use this, use following config in ESPHome
+
 ```
 external_components:
-  # use all components from a local folder
-  - source:
-      type: local
-      path: esphome-climate-mhi
+  source:
+    type: git
+    url: https://github.com/karllinder/esphome-climate-mhi
+    ref: Add_ECO_Preset
+  refresh: 1min
 ```
 Then, add the climate config:
 
 ```
+remote_receiver:
+  id: rcvr
+  pin:
+    number: GPIOxx
+    inverted: true
+    mode:
+      input: true
+      pullup: true
+
 remote_transmitter:
-  pin: GPIO14
+  pin: GPIOxx
   carrier_duty_percent: 50%
   
 climate:
-  - platform: mhi
-    name: "AC Livingroom"
+   - platform: mhi
+     name: "MHI"
+     receiver_id: rcvr
+
 ```

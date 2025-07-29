@@ -22,7 +22,8 @@ namespace esphome {
                     },
                     std::set<climate::ClimatePreset>{
                         climate::CLIMATE_PRESET_NONE, climate::CLIMATE_PRESET_ECO,
-                        climate::CLIMATE_PRESET_BOOST, climate::CLIMATE_PRESET_ACTIVITY
+                        climate::CLIMATE_PRESET_BOOST, climate::CLIMATE_PRESET_ACTIVITY,
+                        climate::CLIMATE_PRESET_SLEEP
                     }
                     //,
                 // 2024-07-05 Added custom -- possible wrong way to do this...

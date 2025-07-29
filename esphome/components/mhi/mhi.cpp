@@ -52,9 +52,9 @@ namespace esphome {
         const uint8_t MHI_SILENT_ON = 0x00;
         const uint8_t MHI_SILENT_OFF = 0x80;
         
-        // Night setback - 2024-11-17 - disable for thie moment
-//        const uint8_t MHI_NIGHT_ON = 0x00;
-//        const uint8_t MHI_NIGHT_OFF = 0x40;
+        // Night setback
+        const uint8_t MHI_NIGHT_ON = 0x00;
+        const uint8_t MHI_NIGHT_OFF = 0x40;
         
         // Eco
         const uint8_t MHI_ECO_ON = 0x00;
@@ -246,7 +246,7 @@ namespace esphome {
             auto _3DAuto = MHI_3DAUTO_OFF;
             auto ecoMode = MHI_ECO_OFF;
             auto silentMode = MHI_SILENT_OFF;
-        //  auto nightMode = MHI_NIGHT_OFF;
+            auto nightMode = MHI_NIGHT_OFF;
 
             // ----------------------
             // Assign the values
@@ -337,28 +337,28 @@ namespace esphome {
                 case climate::CLIMATE_PRESET_NONE:
                     _3DAuto = MHI_3DAUTO_OFF; // set 3Dmode to off
                     ecoMode = MHI_ECO_OFF; //set echo mode OFF
-//                  nightMode = MHI_NIGHT_OFF; //set night off
+                    nightMode = MHI_NIGHT_OFF; //set night off
                     break;
                 case climate::CLIMATE_PRESET_ECO:
                     _3DAuto = MHI_3DAUTO_OFF; // set 3Dmode to off
                     ecoMode = MHI_ECO_ON;  // set device to Eco mode
-//                  nightMode = MHI_NIGHT_OFF; //set night off
+                    nightMode = MHI_NIGHT_OFF; //set night off
                     fanSpeed = MHI_FAN2; //set fan speed
                     break;
                 case climate::CLIMATE_PRESET_BOOST:
                     _3DAuto = MHI_3DAUTO_OFF; // set 3Dmode to off
                     fanSpeed = MHI_HIPOWER; // set device to high fan
- //                 nightMode = MHI_NIGHT_OFF; //set night off
+                    nightMode = MHI_NIGHT_OFF; //set night off
                     break;
                 case climate::CLIMATE_PRESET_ACTIVITY:
                     _3DAuto = MHI_3DAUTO_ON; // set 3dmode to on
- //                 nightMode = MHI_NIGHT_ON; // set nightmode on
+                    nightMode = MHI_NIGHT_OFF; // keep night mode off for activity
                     break;
-                // 2024-07-05 Added preset Night.
-  //            case climate::CLIMATE_PRESET_NIGHT:
-  //                _3DAuto = MHI_3DAUTO_ON; // set 3dmode to on
-  //                nightMode = MHI_NIGHT_ON; // set nightmode on
-  //                break;
+                case climate::CLIMATE_PRESET_SLEEP:
+                    _3DAuto = MHI_3DAUTO_OFF; // set 3dmode to off
+                    nightMode = MHI_NIGHT_ON; // set nightmode on
+                    fanSpeed = MHI_FAN1; // set fan to low for quiet operation
+                    break;
                 default: //set None to default - no action
                     break;
             }
@@ -383,7 +383,7 @@ namespace esphome {
             remote_state[13] |= swingV | swingH;
 
             // Silent and Night mode
-            remote_state[15] |= silentMode;//  | nightMode;
+            remote_state[15] |= silentMode | nightMode;
 
             // There is no real checksum, but some bytes are inverted
             remote_state[6] = ~remote_state[5];

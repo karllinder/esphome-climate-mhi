@@ -73,7 +73,7 @@ climate:
 
 ### Night Mode (New Feature)
 The night mode feature is now available through the **Sleep** preset. When activated:
-- Enables the AC unit's built-in night setback mode
+- Enables the AC unit's built-in night setback mode, set the temperature to 10°C
 - Automatically sets fan speed to low for quiet operation
 - Disables 3D auto mode
 - Perfect for nighttime use to ensure comfortable and quiet sleep

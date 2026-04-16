@@ -1,4 +1,5 @@
 import esphome.codegen as cg
+
 from esphome.components import climate_ir
 
 AUTO_LOAD = ["climate_ir"]

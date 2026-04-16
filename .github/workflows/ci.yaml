@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  push:
+    branches: [main, beta]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  compile:
+    name: esphome compile (${{ matrix.test }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        test:
+          - test.esp8266-ard.yaml
+          - test.esp32-ard.yaml
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install ESPHome
+        run: |
+          python -m pip install --upgrade pip
+          pip install esphome
+
+      - name: esphome config
+        working-directory: tests
+        run: esphome config ${{ matrix.test }}
+
+      - name: esphome compile
+        working-directory: tests
+        run: esphome compile ${{ matrix.test }}

@@ -3,7 +3,7 @@
 
 namespace esphome {
     namespace mhi {
-        static const char *TAG = "mhi.climate";
+        static const char *const TAG = "mhi.climate";
 
         // Power
         const uint32_t MHI_OFF = 0x08;

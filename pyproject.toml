@@ -1,0 +1,20 @@
+[tool.ruff]
+required-version = ">=0.5.0"
+target-version = "py311"
+
+[tool.ruff.lint]
+select = [
+  "E",    # pycodestyle
+  "F",    # pyflakes/autoflake
+  "I",    # isort
+  "UP",   # pyupgrade
+]
+
+ignore = [
+  "E501", # line too long
+]
+
+[tool.ruff.lint.isort]
+force-sort-within-sections = true
+combine-as-imports = true
+split-on-trailing-comma = false

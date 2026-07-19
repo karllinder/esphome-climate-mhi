@@ -17,6 +17,37 @@ external_components:
     type: git
     url: https://github.com/karllinder/esphome-climate-mhi
 ```
+
+## Branches
+
+| Branch | Intended use | Tested against |
+|---|---|---|
+| `main` | Stable, day-to-day use | ESPHome 2026.4.0 |
+| `beta` | Opt-in preview of the v2.0 code-quality refactor | ESPHome 2026.4.0 (CI: ESP8266 + ESP32 Arduino) |
+
+### Trying the beta
+
+The `beta` branch carries a round of ESPHome-style cleanups that are **behaviour-neutral** but represent a large diff:
+
+- C++ reformatted to upstream ESPHome style (2-space indent, `snake_case` locals, `format_hex_pretty` for hex logging, dead code removed).
+- `.clang-format` and `pyproject.toml` (ruff) for consistent local formatting/linting.
+- GitHub Actions CI that compiles both `tests/test.esp8266-ard.yaml` and `tests/test.esp32-ard.yaml` on every PR.
+- Python (`climate.py`) tidied: unused imports removed, `CODEOWNERS` added, double-quoted strings.
+
+Same IR protocol, same supported modes/presets, same pinout — no behaviour change is intended. Once the beta has soaked for a while it will be merged into `main` as **v2.0**.
+
+To opt in:
+
+```yaml
+external_components:
+  source:
+    type: git
+    url: https://github.com/karllinder/esphome-climate-mhi
+    ref: beta
+```
+
+Known open item: issue [#4](https://github.com/karllinder/esphome-climate-mhi/issues/4) tracks hardware validation of a small horizontal-swing byte change. Please comment there if you test.
+
 Then, add the climate config:
 
 ```yaml
@@ -81,6 +112,8 @@ The night mode feature is now available through the **Sleep** preset. When activ
 To activate night mode, simply select the "Sleep" preset in Home Assistant's climate control interface.
 
 ## Recent Changes
+- Fixed `ClimateIR` constructor signature for ESPHome 2026.4.0 (`std::set<...>` → `FiniteSetMask`)
 - Fixed deprecated ESPHome schema warnings for compatibility with ESPHome 2025.11.0
 - Added night mode support via the Sleep preset
 - Updated to use async/await syntax for ESPHome compatibility
+- Opened a `beta` branch staging the v2.0 upstream-style refactor (see [Branches](#branches))

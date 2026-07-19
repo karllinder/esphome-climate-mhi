@@ -15,7 +15,7 @@ To use this, use following config in ESPHome
 external_components:
   source:
     type: git
-    url: https://github.com/karllinder/esphome-climate-mhi
+    url: https://github.com/coldreckon/esphome-climate-mhi
 ```
 
 ## Branches
@@ -27,7 +27,7 @@ external_components:
 
 The v2.0 refactor previously staged on `beta` shipped to `main` as **v2.0.0**. There is nothing to opt in to right now — `beta` matches `main` and will be used to stage the next round of larger changes.
 
-Known open item: issue [#4](https://github.com/karllinder/esphome-climate-mhi/issues/4) tracks hardware validation of a small horizontal-swing byte change. Please comment there if you test.
+Known open item: issue [#4](https://github.com/coldreckon/esphome-climate-mhi/issues/4) tracks hardware validation of a small horizontal-swing byte change. Please comment there if you test.
 
 Then, add the climate config:
 

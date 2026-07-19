@@ -3,7 +3,7 @@ import esphome.codegen as cg
 from esphome.components import climate_ir
 
 AUTO_LOAD = ["climate_ir"]
-CODEOWNERS = ["@karllinder"]
+CODEOWNERS = ["@coldreckon"]
 
 mhi_ns = cg.esphome_ns.namespace("mhi")
 MhiClimate = mhi_ns.class_("MhiClimate", climate_ir.ClimateIR)
